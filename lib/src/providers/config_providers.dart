@@ -1,6 +1,7 @@
 import 'package:feature_flag_kit/feature_flag_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/mock_config_repository.dart';
 import '../features/feature_key.dart';
 
 /// The app-wide [ConfigSessionController].
@@ -57,4 +58,12 @@ final evaluationResultProvider = Provider.family<EvaluationResult, FeatureKey>((
 final currentUserProvider = Provider<UserContext>((ref) {
   ref.watch(configRevisionProvider);
   return ref.watch(sessionControllerProvider).currentUser;
+});
+
+/// The mock backend handle, so the developer menu can switch environments.
+/// Injected via override at bootstrap, like [sessionControllerProvider].
+final mockRepositoryProvider = Provider<MockConfigRepository>((ref) {
+  throw UnimplementedError(
+    'mockRepositoryProvider must be overridden in bootstrap()',
+  );
 });
