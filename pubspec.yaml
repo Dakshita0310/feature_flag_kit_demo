@@ -1,0 +1,22 @@
+name: feature_flag_kit_demo
+description: "Demo Flutter client for feature_flag_kit: staged rollouts, deterministic bucketing, and instant kill-switches."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  feature_flag_kit: ^0.1.0
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.3.2
+  shared_preferences: ^2.5.5
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
