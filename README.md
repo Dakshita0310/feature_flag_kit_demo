@@ -30,7 +30,7 @@ plan.
 
 - [x] Scaffold: strict lints, CI, docs, feature_flag_kit ^0.1.0
 - [x] Feature registry and baked-in defaults
-- [ ] Mock config repository (Config A/B)
+- [x] Mock config repository (Config A/B)
 - [ ] SharedPreferences LKG store
 - [ ] Riverpod integration
 - [ ] Refresh triggers and user switching
