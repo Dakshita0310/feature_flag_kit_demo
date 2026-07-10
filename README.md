@@ -106,6 +106,76 @@ final enabled = ref.watch(featureFlagProvider(FeatureKey.newCheckout));
 
 ## Architecture
 
+```mermaid
+flowchart TB
+    subgraph engine["feature_flag_kit - remote config engine (pub.dev, pure Dart, zero deps)"]
+        direction TB
+        EV["Evaluator<br/>kill-switch &gt; targeting &gt; rollout &gt; fallback<br/>returns EvaluationResult (value + reason + debug message)"]
+        MH["Deterministic bucketing<br/>murmur3('userId:featureKey') % 100"]
+        VAL["Strict config validation<br/>atomic, typed errors, never partially applied"]
+        SC["ConfigSessionController<br/>selective freeze: kill-switches apply live,<br/>other changes wait for next launch"]
+        FI["ConfigFetcher (interface)"]
+        SI["ConfigStore (interface)"]
+        SC --> EV --> MH
+        SC --> VAL
+        SC --> FI
+        SC --> SI
+    end
+
+    subgraph app["feature_flag_kit_demo - Flutter client"]
+        direction TB
+        subgraph impls["Engine interface implementations"]
+            MOCK["MockConfigRepository<br/>Config A: 50% rollout / Config B: kill-switch on"]
+            PREFS["SharedPrefsConfigStore<br/>Last-Known-Good cache"]
+        end
+        subgraph trig["Triggers, all funnel into one refresh()"]
+            T1["Cold start"]
+            T2["Foregrounding observer"]
+            T3["Silent-push simulator"]
+        end
+        subgraph riv["Riverpod bindings (Notifier API)"]
+            REV["ConfigRevision<br/>bumps on engine change events"]
+            FFP["featureFlagProvider(FeatureKey)<br/>one-line UI gating"]
+        end
+        subgraph feat["Implemented features"]
+            F1["Gated checkout:<br/>New vs Legacy widget substitution"]
+            F2["Promo banner (100% rollout)"]
+            F3["User A / User B switcher<br/>deterministic buckets 10 vs 82"]
+            F4["Developer menu:<br/>explainability, env switch, silent push"]
+        end
+    end
+
+    MOCK -. implements .-> FI
+    PREFS -. implements .-> SI
+    trig --> SC
+    SC -- "changes stream<br/>(live kill-switch, user switch)" --> REV
+    REV --> FFP --> feat
+    F4 -- "switch Config A/B,<br/>simulate push" --> MOCK
+```
+
+### Key decisions
+
+1. **Deterministic bucketing, permanent by contract:** vendored MurmurHash3
+   of `userId:featureKey` mod 100, the same scheme LaunchDarkly and Unleash
+   use. Stable across sessions and devices, independent per feature (no
+   sticky cohorts), and pinned by regression tests because changing it would
+   silently reshuffle every user.
+2. **Selective freeze:** kill-switch activations tear features down
+   mid-session; rollout and targeting changes are persisted but only apply
+   on the next launch, so the UI never shifts under the user's feet.
+3. **Pull-based propagation with push-triggered pulls:** fetch on cold start
+   and foregrounding; emergencies arrive as a silent push that triggers the
+   same single `refresh()` path. Battery-friendly, CDN-cacheable, and
+   push-latency for kill-switches.
+4. **Engine as a published pure-Dart package:** evaluation, validation, and
+   session semantics live in `feature_flag_kit` on pub.dev with zero
+   dependencies; the app only implements `ConfigFetcher`/`ConfigStore` and
+   UI. Swapping the mock backend for a real one touches one class.
+5. **Fail-safe by default:** boot from `const` in-code defaults (frame-0,
+   no splash), hydrate from a validated Last-Known-Good cache, reject
+   corrupted payloads atomically, and exclude users when targeting
+   attributes are unknown.
+
 See [docs/flutter_app_architecture_spec.md](docs/flutter_app_architecture_spec.md)
 for the app design, [docs/prd.md](docs/prd.md) for the product requirements,
 and [docs/implementation_plan.md](docs/implementation_plan.md) for the build
