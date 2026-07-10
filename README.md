@@ -35,7 +35,7 @@ plan.
 - [x] Riverpod integration
 - [x] Refresh triggers and user switching
 - [x] Demo UI with gated feature
-- [ ] Developer menu
+- [x] Developer menu
 - [ ] End-to-end scenarios
 - [ ] Final docs
 

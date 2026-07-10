@@ -5,6 +5,7 @@ import '../features/demo_users.dart';
 import '../features/feature_key.dart';
 import '../providers/config_providers.dart';
 import 'checkout_widgets.dart';
+import 'developer_menu_screen.dart';
 
 /// The demo home screen: a promo banner and a checkout section, both
 /// flag-gated, plus the user profile switcher.
@@ -17,7 +18,20 @@ class HomeScreen extends ConsumerWidget {
     final showPromo = ref.watch(featureFlagProvider(FeatureKey.promoBanner));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Feature Flag Kit Demo')),
+      appBar: AppBar(
+        title: const Text('Feature Flag Kit Demo'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bug_report_outlined),
+            tooltip: 'Developer menu',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const DeveloperMenuScreen(),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
