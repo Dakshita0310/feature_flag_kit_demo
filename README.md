@@ -29,7 +29,7 @@ plan.
 ## Roadmap
 
 - [x] Scaffold: strict lints, CI, docs, feature_flag_kit ^0.1.0
-- [ ] Feature registry and baked-in defaults
+- [x] Feature registry and baked-in defaults
 - [ ] Mock config repository (Config A/B)
 - [ ] SharedPreferences LKG store
 - [ ] Riverpod integration
