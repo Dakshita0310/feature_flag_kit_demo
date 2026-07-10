@@ -32,7 +32,7 @@ plan.
 - [x] Feature registry and baked-in defaults
 - [x] Mock config repository (Config A/B)
 - [x] SharedPreferences LKG store
-- [ ] Riverpod integration
+- [x] Riverpod integration
 - [ ] Refresh triggers and user switching
 - [ ] Demo UI with gated feature
 - [ ] Developer menu
