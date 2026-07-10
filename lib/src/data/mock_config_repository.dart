@@ -33,6 +33,9 @@ class MockConfigRepository implements ConfigFetcher {
   /// Which simulated backend the next [fetch] hits.
   MockEnvironment environment = MockEnvironment.configA;
 
+  /// Number of fetches served, displayed in the developer menu.
+  int fetchCount = 0;
+
   static const Map<String, Object?> _configA = {
     'version': configAVersion,
     'features': {
@@ -51,6 +54,7 @@ class MockConfigRepository implements ConfigFetcher {
 
   @override
   Future<RemoteConfig> fetch() async {
+    fetchCount++;
     await Future<void>.delayed(latency);
     final raw = switch (environment) {
       MockEnvironment.configA => _configA,

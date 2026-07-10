@@ -33,7 +33,7 @@ plan.
 - [x] Mock config repository (Config A/B)
 - [x] SharedPreferences LKG store
 - [x] Riverpod integration
-- [ ] Refresh triggers and user switching
+- [x] Refresh triggers and user switching
 - [ ] Demo UI with gated feature
 - [ ] Developer menu
 - [ ] End-to-end scenarios
