@@ -36,7 +36,7 @@ plan.
 - [x] Refresh triggers and user switching
 - [x] Demo UI with gated feature
 - [x] Developer menu
-- [ ] End-to-end scenarios
+- [x] End-to-end scenarios
 - [ ] Final docs
 
 ## License
