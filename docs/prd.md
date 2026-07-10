@@ -62,7 +62,7 @@ Based on review, we have established the following strict architectural guidelin
 
 ### 2. Deterministic Hashing: Stable Cross-Session Hashes
 * **The Trap:** Dart's built-in `String.hashCode` randomizes per execution/isolate for security. Using it would cause a user's bucket to change every time they restart the app, completely breaking determinism.
-* **Implementation:** We must use a stable hashing algorithm. We will import the `crypto` package and use a fast hash like MD5, convert the first few bytes to an integer, and modulo by 100 (e.g., `md5.convert(utf8.encode(userId + flagKey))`).
+* **Implementation:** We must use a stable hashing algorithm. Finalized decision (see implementation plan, section 0): MurmurHash3 (x86 32-bit variant), vendored as a reference implementation with published test vectors - no third-party dependency. Bucket = `murmur3("userId:featureKey") % 100`. The colon separator prevents concatenation collisions, and this choice is permanent - changing it later would reshuffle every user's bucket. (An earlier draft proposed MD5 via the `crypto` package; it was superseded to keep the engine dependency-free and aligned with industry SDKs like LaunchDarkly and Unleash.)
 
 ### 3. Fallback Defaults: In-Code (Dart Map/Enum)
 * **The Rationale:** Loading a JSON file from the `rootBundle` in Flutter is an asynchronous I/O operation. Relying on an asset for defaults means the app cannot render its first frame synchronously and would hang on a splash screen.
